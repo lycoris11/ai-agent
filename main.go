@@ -24,7 +24,6 @@ type Condition struct {
 type HourData struct {
 	TimeEpoch    int       `json:"time_epoch"`
 	Time         string    `json:"time"`
-	TempC        float64   `json:"temp_c"`
 	TempF        float64   `json:"temp_f"`
 	IsDay        int       `json:"is_day"`
 	Condition    Condition `json:"condition"`
@@ -39,13 +38,9 @@ type HourData struct {
 	SnowCm       float64   `json:"snow_cm"`
 	Humidity     int       `json:"humidity"`
 	Cloud        int       `json:"cloud"`
-	FeelslikeC   float64   `json:"feelslike_c"`
 	FeelslikeF   float64   `json:"feelslike_f"`
-	WindchillC   float64   `json:"windchill_c"`
 	WindchillF   float64   `json:"windchill_f"`
-	HeatindexC   float64   `json:"heatindex_c"`
 	HeatindexF   float64   `json:"heatindex_f"`
-	DewpointC    float64   `json:"dewpoint_c"`
 	DewpointF    float64   `json:"dewpoint_f"`
 	WillItRain   int       `json:"will_it_rain"`
 	ChanceOfRain int       `json:"chance_of_rain"`
@@ -106,26 +101,21 @@ func main() {
 	weatherAIApiKey := getWeatherAPIKey()
 
 	r := gin.Default()
-	r.GET("/ideas", func(c *gin.Context) {
+	r.POST("/weatherScript", func(c *gin.Context) {
 		getAIResponse(c, openAIApiKey)
 	})
 	r.GET("/weather/:city", func(c *gin.Context) {
 		getWeatherResponse(c, weatherAIApiKey)
 	})
-	r.GET("/test", getTest)
 	r.Run("localhost:8080")
 }
 
-func getTest(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, "200 success")
-}
-
-func getWeatherResponse(c *gin.Context, weatherAIApiKey string) []HourData {
+func getWeatherResponse(c *gin.Context, weatherAIApiKey string) {
 
 	city := c.Param("city")
 	if city == "" {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Missing city parameter"})
-		return nil
+		return
 	}
 
 	url := fmt.Sprintf("https://api.weatherapi.com/v1/forecast.json?key=%s&q=%s&days=1", weatherAIApiKey, city)
@@ -133,19 +123,19 @@ func getWeatherResponse(c *gin.Context, weatherAIApiKey string) []HourData {
 	res, err := http.Get(url)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Failed to call weather API"})
-		return nil
+		return
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
 		c.JSON(res.StatusCode, gin.H{"error": "Weather API returned non-200 status"})
-		return nil
+		return
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read weather API response"})
-		return nil
+		return
 	}
 
 	var weatherRes WeatherResponse
@@ -161,11 +151,27 @@ func getWeatherResponse(c *gin.Context, weatherAIApiKey string) []HourData {
 	trimmed_hours := hours[7:22]
 
 	c.IndentedJSON(http.StatusOK, trimmed_hours)
-
-	return trimmed_hours
 }
 
 func getAIResponse(c *gin.Context, openAIApiKey string) {
+
+	var request []HourData
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	jsonData, err := json.MarshalIndent(request, "", "  ")
+	if err != nil {
+		return
+	}
+
+	prompt := fmt.Sprintf(`Pretend you're the weatherman! Take this hourly weather data and generate a script you would read to people in the morning!:
+"""
+%s
+"""
+`, string(jsonData))
 
 	client := openai.NewClient(
 		option.WithAPIKey(openAIApiKey),
@@ -173,7 +179,7 @@ func getAIResponse(c *gin.Context, openAIApiKey string) {
 
 	chatCompletion, err := client.Chat.Completions.New(context.TODO(), openai.ChatCompletionNewParams{
 		Messages: []openai.ChatCompletionMessageParamUnion{
-			openai.UserMessage("Say this is a test"),
+			openai.UserMessage(prompt),
 		},
 		Model: openai.ChatModelGPT4o,
 	})
