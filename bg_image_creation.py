@@ -67,6 +67,6 @@ def create_bg_image(data):
         x_pos = i*cell_width + i*gap
         result.paste(comp_img, (x_pos, 0), comp_img)
 
-    result.save('./temp_assets/weather_chicago.png')
+    result.save('./assets/temp_assets/weather_chicago.png')
     result.show()
 
