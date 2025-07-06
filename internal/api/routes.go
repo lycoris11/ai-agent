@@ -8,14 +8,22 @@ import (
 
 func SetupRouter(keys *model.APIKeys) *gin.Engine {
 	r := gin.Default()
-	r.POST("/ai/weatherScript", func(c *gin.Context) {
-		service.GetAIResponse(c, keys.OpenAIApiKey)
+	r.GET("/weather/hourly/:city", func(c *gin.Context) {
+		service.GetHourlyWeatherResponse(c, keys.WeatherAPIKey)
 	})
-	r.GET("/weather/:city", func(c *gin.Context) {
-		service.GetWeatherResponse(c, keys.WeatherAPIKey)
+	r.GET("/weather/7day/:city", func(c *gin.Context) {
+		service.Get7DayWeatherResponse(c, keys.WeatherAPIKey)
 	})
+
+	r.POST("/ai/hourly/weatherScript", func(c *gin.Context) {
+		service.GetHourlyAIResponse(c, keys.OpenAIApiKey)
+	})
+	r.POST("/ai/7day/weatherScript", func(c *gin.Context) {
+		service.Get7DayAIResponse(c, keys.OpenAIApiKey)
+	})
+
 	r.POST("/ai/videoGen", func(c *gin.Context) {
-		service.GetWeatherResponse(c, keys.HeyGenVideoAPIKey)
+		service.GetHourlyWeatherResponse(c, keys.HeyGenVideoAPIKey)
 	})
 	return r
 }
