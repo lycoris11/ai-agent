@@ -1,3 +1,4 @@
 .env
 .ec2_user_data.sh
 temp_assets/*
+__pycache__
