@@ -14,35 +14,40 @@ def render_weather_component(day, icon_url, maxtemp, mintemp, condition, width=1
                                 radius=rect_radius, fill=box_color)
 
     try:
-        font = ImageFont.truetype("segoeui.ttf", 28)
-        font_bold = ImageFont.truetype("segoeuib.ttf", 28)
-        font_small = ImageFont.truetype("segoeuib.ttf", 18)
+        day_font = ImageFont.truetype("./assets/Roboto-Medium.ttf", 64)
+        max_temp_font = ImageFont.truetype("./assets/Roboto-Medium.ttf", 52)
+        min_temp_font = ImageFont.truetype("./assets/Roboto-Medium.ttf", 38)
+        condition_font = ImageFont.truetype("./assets/Roboto-Medium.ttf", 42)
     except IOError:
-        font = ImageFont.load_default()
-        font_bold = ImageFont.load_default()
-        font_small = ImageFont.load_default()
+        day_font = ImageFont.load_default()
+        max_temp_font = ImageFont.load_default()
+        min_temp_font = ImageFont.load_default()
 
-    bbox = comp_draw.textbbox((0, 0), day, font=font)
+    bbox = comp_draw.textbbox((0, 0), day, font=day_font)
     w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    comp_draw.text(((width - w)//2, 20), day, fill=(225, 225, 225), font=font)
+    comp_draw.text(((width - w)//2, 30), day, fill=(225, 225, 225), font=day_font)
 
     icon = Image.open(BytesIO(requests.get(icon_url).content)).convert("RGBA")
-    icon = icon.resize((64, 64), Image.LANCZOS)
-    comp.paste(icon, ((width - 64)//2, 75), icon)
-
-    bbox = comp_draw.textbbox((0, 0), maxtemp, font=font)
-    w2, h2 = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    comp_draw.text(((width - w2)//2, 150), maxtemp, fill=(225, 225, 225), font=font_bold)
+    icon = icon.resize((128, 128), Image.LANCZOS)
+    comp.paste(icon, ((width - 128)//2, 100), icon)
     
-    bbox = comp_draw.textbbox((0, 0), condition, font=font_small)
-    w3, h3 = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    comp_draw.multiline_text(((width - w3)//2, 225), condition, fill=(225, 225, 225), font=font_small, align="center")
+    bbox = comp_draw.textbbox((0, 0), maxtemp[:-1], font=max_temp_font)
+    w2, h2 = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    comp_draw.text(((width - w2)//2, 255), maxtemp, fill=(225, 225, 225), font=max_temp_font, align="center")
+    
+    bbox = comp_draw.textbbox((0, 0), mintemp[:-1], font=min_temp_font)
+    w3, h2 = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    comp_draw.text(((width - w3)//2, 310), mintemp, fill=(225, 225, 225), font=min_temp_font, align="center")
+    
+    bbox = comp_draw.textbbox((0, 0), condition, font=condition_font)
+    w4, h3 = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    comp_draw.multiline_text(((width - w4)//2, 400), condition, fill=(225, 225, 225), font=condition_font, align="center")
 
     return comp
 
 def create_bg_image(data):
     
-    cell_width, cell_height = 275, 1080
+    cell_width, cell_height = 274, 1080
     gap = 0
     n = len(data)
     total_width = cell_width*n + gap*(n-1)
