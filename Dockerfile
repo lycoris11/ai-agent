@@ -3,10 +3,11 @@ FROM golang:1.24.4-alpine AS Builder
 
 WORKDIR /app
 
-RUN apk add --no-cache git
-RUN git clone https://github.com/lycoris11/ai-agent
-
+COPY go.mod go.sum ./
 RUN go mod download
+
+COPY . .
+
 RUN CGO_ENABLED=0 GOOS=linux go build -o /ai-api ./cmd/ai-agent/main.go
 
 #Run
