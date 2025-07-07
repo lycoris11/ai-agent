@@ -38,7 +38,7 @@ type Dimension struct {
 }
 
 type VideoData struct {
-	Caption     string      `json:"caption"`
-	Dimention   Dimension   `json:"dimension"`
-	VideoInputs VideoInputs `json:"video_inputs"`
+	Caption     bool          `json:"caption"`
+	Dimention   Dimension     `json:"dimension"`
+	VideoInputs []VideoInputs `json:"video_inputs"`
 }

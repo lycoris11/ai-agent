@@ -26,7 +26,7 @@ func SetupRouter(keys *model.APIKeys) *gin.Engine {
 		service.UploadImage(c, keys.HeyGenVideoAPIKey)
 	})
 	r.POST("/video/GenerateVideo", func(c *gin.Context) {
-		service.GetHourlyWeatherResponse(c, keys.HeyGenVideoAPIKey)
+		service.GenerateAIVideo(c, keys.HeyGenVideoAPIKey)
 	})
 	return r
 }

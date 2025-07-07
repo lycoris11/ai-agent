@@ -21,7 +21,7 @@ func GetHourlyAIResponse(c *gin.Context, openAIApiKey string) {
 		return
 	}
 
-	jsonData, err := json.MarshalIndent(request, "", "  ")
+	jsonData, err := json.Marshal(request)
 	if err != nil {
 		return
 	}

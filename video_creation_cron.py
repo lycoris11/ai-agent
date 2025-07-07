@@ -1,5 +1,3 @@
-#%%
-
 import requests
 import json
 import datetime
@@ -29,12 +27,11 @@ def get_day_name(date_string: str) -> str:
     
     return day_name
 
-def get_date_for_image() -> list:
-    response = json.loads(requests.get("http://localhost:8080/weather/7day/chicago").text)
+def get_data_for_image(weather_data) -> list:
     
     data = []
     
-    for dateData in response:
+    for dateData in weather_data:
         dayInfo = {}
         dayInfo.update({'day': get_day_name(dateData['date'])})
         dayInfo.update({'icon_url': "https:"+dateData['day']['condition']['icon']})
@@ -45,12 +42,76 @@ def get_date_for_image() -> list:
     
     return data
 
+def upload_image() -> dict:
+    
+    url = "http://localhost:8080/video/backgroundImageUpload"
+    file_path = "./assets/temp_assets/weather_chicago.png"
+
+    with open(file_path, 'rb') as f:
+        files = {'file': f}
+        response = requests.post(url, files=files)
+
+    return response.text
+
+def get_7day_weather_script(weatherData) -> str:
+    url = "http://localhost:8080/ai/7day/weatherScript"
+    payload = weatherData
+    response = requests.post(url, json=payload)
+
+    return response.text
+
+def generate_video(image_url, script):
+    url = "http://localhost:8080/video/GenerateVideo"
+    payload = {
+        "caption": False,
+        "dimension": {
+            "width": 1280,
+            "height": 720
+        },
+        "video_inputs": [
+            {
+                "character": {
+                    "type": "talking_photo",
+                    "talking_photo_id": "aa80db9e21f5451aa3a31e7290c3cf9b",
+                    "scale": 0.51,
+                    "offset": {
+                        "x": 0.25,
+                        "y": 0.25
+                    },
+                },
+                "voice": {
+                    "type": "text",
+                    "voice_id": "5f745b3db0db43739f31499f4f0aedd6",
+                    "input_text": script,
+                    "speed": 1.25
+                },
+                "background": {
+                    "type": "image",
+                    "url": image_url
+                }
+            }
+        ]
+    }
+    response = requests.post(url, json=payload)
+    print('Status code:', response.status_code)
+    print('Response:', response.text)
+
 if __name__ == "__main__":
+    #First get the 7 day weather data
+    weatherData = json.loads(requests.get("http://localhost:8080/weather/7day/chicago").text)
     
-    data = get_date_for_image()
+    #Clean it up weather data. Use it to make a background image
+    data = get_data_for_image(weatherData)
     create_bg_image(data)
-    #df = df.drop(['time_epoch', ], inplace=True)
     
+    #Upload image to HeyGen
+    response = json.loads(upload_image())
     
-    #print(json.dumps(response[0], indent=2))
-# %%
+    #Get the 7 day forecast script from gpt 4.1
+    script = get_7day_weather_script(weatherData)
+    print(response["data"]["url"])
+    print(script)
+    
+    #Generate the video on HeyGen using the background image and the script.
+    generate_video(image_url=response["data"]["url"], script=script)
+    

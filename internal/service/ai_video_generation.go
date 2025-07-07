@@ -13,10 +13,10 @@ import (
 
 func GenerateAIVideo(c *gin.Context, videoAPIKey string) {
 
-	var request []model.VideoData
+	var request model.VideoData
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid request"})
+		c.JSON(400, gin.H{"error": "From GO API: Invalid request"})
 		return
 	}
 
@@ -27,20 +27,35 @@ func GenerateAIVideo(c *gin.Context, videoAPIKey string) {
 
 	payload := bytes.NewBuffer(jsonPayload)
 
-	url := "https://api.heygen.com/v2/video/generate"
+	fmt.Println(payload)
 
-	req, _ := http.NewRequest("POST", url, payload)
+	url := "https://api.heygen.com/v2/video/generate"
+	req, err := http.NewRequest("POST", url, payload)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
+		return
+	}
 
 	req.Header.Add("accept", "application/json")
 	req.Header.Add("content-type", "application/json")
 	req.Header.Add("x-api-key", videoAPIKey)
 
-	res, _ := http.DefaultClient.Do(req)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request"})
+		return
+	}
 
 	defer res.Body.Close()
-	body, _ := io.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response"})
+		return
+	}
 
 	fmt.Println(string(body))
+	c.Data(res.StatusCode, res.Header.Get("Content-Type"), body)
+
 }
 
 func UploadImage(c *gin.Context, videoAPIKey string) {
@@ -65,8 +80,8 @@ func UploadImage(c *gin.Context, videoAPIKey string) {
 		return
 	}
 
-	req.Header.Add("content-type", "image/jpeg")
-	req.Header.Add("X-API-KEY", "<your-api-key>")
+	req.Header.Add("content-type", "image/png")
+	req.Header.Add("x-api-key", videoAPIKey)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -81,5 +96,6 @@ func UploadImage(c *gin.Context, videoAPIKey string) {
 		return
 	}
 
+	fmt.Println(string(body))
 	c.Data(res.StatusCode, res.Header.Get("Content-Type"), body)
 }
