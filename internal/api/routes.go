@@ -22,7 +22,10 @@ func SetupRouter(keys *model.APIKeys) *gin.Engine {
 		service.Get7DayAIResponse(c, keys.OpenAIApiKey)
 	})
 
-	r.POST("/ai/videoGen", func(c *gin.Context) {
+	r.POST("/video/backgroundImageUpload", func(c *gin.Context) {
+		service.UploadImage(c, keys.HeyGenVideoAPIKey)
+	})
+	r.POST("/video/GenerateVideo", func(c *gin.Context) {
 		service.GetHourlyWeatherResponse(c, keys.HeyGenVideoAPIKey)
 	})
 	return r
