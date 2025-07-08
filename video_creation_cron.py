@@ -1,6 +1,7 @@
 import requests
 import json
 import datetime
+import time
 from bg_image_creation import create_bg_image
 
 def format_condition(condition: str) -> str:
@@ -61,7 +62,7 @@ def get_7day_weather_script(weatherData) -> str:
     return response.text
 
 def generate_video(image_url, script):
-    url = "http://localhost:8080/video/GenerateVideo"
+    url = "http://localhost:8080/video/generateVideo"
     payload = {
         "caption": False,
         "dimension": {
@@ -93,8 +94,26 @@ def generate_video(image_url, script):
         ]
     }
     response = requests.post(url, json=payload)
-    print('Status code:', response.status_code)
-    print('Response:', response.text)
+    #print('Status code:', response.status_code)
+    #print('Response:', response.text)
+    return response.text
+
+def check_if_video_is_generated(video_id):
+    url = f'http://localhost:8080//video/getStatus?video_id={video_id}'
+    response = requests.get(url)
+    res = json.loads(response.text)['data']['status']
+    if res != 'completed' or res != 'failed':
+        while(res == 'processing' or res == 'waiting' or res == 'pending'):
+            time.sleep(120)
+            response = requests.get(url)
+            res = json.loads(response.text)['data']['status']
+            
+            if res == 'completed':
+                break
+            
+            if res == 'failed':
+                break
+    return response.text
 
 if __name__ == "__main__":
     #First get the 7 day weather data
@@ -113,5 +132,7 @@ if __name__ == "__main__":
     print(script)
     
     #Generate the video on HeyGen using the background image and the script.
-    generate_video(image_url=response["data"]["url"], script=script)
-    
+    vide_response = json.loads(generate_video(image_url=response["data"]["url"], script=script))
+    video_id = vide_response['data']['video_id']
+
+    video_url = json.loads(check_if_video_is_generated(video_id))['data']['video_url']

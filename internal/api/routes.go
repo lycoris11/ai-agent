@@ -25,8 +25,11 @@ func SetupRouter(keys *model.APIKeys) *gin.Engine {
 	r.POST("/video/backgroundImageUpload", func(c *gin.Context) {
 		service.UploadImage(c, keys.HeyGenVideoAPIKey)
 	})
-	r.POST("/video/GenerateVideo", func(c *gin.Context) {
+	r.POST("/video/generateVideo", func(c *gin.Context) {
 		service.GenerateAIVideo(c, keys.HeyGenVideoAPIKey)
+	})
+	r.GET("/video/getStatus", func(c *gin.Context) {
+		service.GetStatus(c, keys.HeyGenVideoAPIKey)
 	})
 	return r
 }

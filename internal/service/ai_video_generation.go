@@ -99,3 +99,37 @@ func UploadImage(c *gin.Context, videoAPIKey string) {
 	fmt.Println(string(body))
 	c.Data(res.StatusCode, res.Header.Get("Content-Type"), body)
 }
+
+func GetStatus(c *gin.Context, videoAPIKey string) {
+	video_id := c.Query("video_id")
+	if video_id == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Missing video_id query string parameter."})
+		return
+	}
+
+	url := fmt.Sprintf("https://api.heygen.com/v1/video_status.get?video_id=%s", video_id)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
+		return
+	}
+
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("x-api-key", videoAPIKey)
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request"})
+		return
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response"})
+		return
+	}
+
+	fmt.Println(string(body))
+	c.Data(res.StatusCode, res.Header.Get("Content-Type"), body)
+}
