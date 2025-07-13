@@ -6,7 +6,7 @@ import (
 	"github.com/lycoris11/ai-agent/internal/service"
 )
 
-func SetupRouter(keys *model.APIKeys) *gin.Engine {
+func SetupRouter(keys *model.APIKeys, google_auth *model.Google) *gin.Engine {
 	r := gin.Default()
 	r.GET("/weather/hourly/:city", func(c *gin.Context) {
 		service.GetHourlyWeatherResponse(c, keys.WeatherAPIKey)
@@ -30,6 +30,10 @@ func SetupRouter(keys *model.APIKeys) *gin.Engine {
 	})
 	r.GET("/video/getStatus", func(c *gin.Context) {
 		service.GetStatus(c, keys.HeyGenVideoAPIKey)
+	})
+
+	r.POST("/uploadVideo", func(c *gin.Context) {
+		UploadVideo(c, google_auth)
 	})
 	return r
 }

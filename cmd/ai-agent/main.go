@@ -13,8 +13,13 @@ func main() {
 		HeyGenVideoAPIKey: config.GetHeyGenVideoAPIKey(),
 	}
 	ENV := config.GetEnv()
+	google_auth := model.Google{
+		GoogleRefreshToken: config.GetGoogleRefreshToken(),
+		ClientID:           config.GetGoogleClientID(),
+		ClientSecret:       config.GetGoogleClientSecret(),
+	}
 
-	r := api.SetupRouter(&keys)
+	r := api.SetupRouter(&keys, &google_auth)
 
 	switch ENV {
 	case "prod":

@@ -43,10 +43,9 @@ def get_data_for_image(weather_data) -> list:
     
     return data
 
-def upload_image() -> dict:
+def upload_image(file_path="./assets/temp_assets/weather_chicago.png") -> dict:
     
     url = "http://localhost:8080/video/backgroundImageUpload"
-    file_path = "./assets/temp_assets/weather_chicago.png"
 
     with open(file_path, 'rb') as f:
         files = {'file': f}
@@ -72,8 +71,8 @@ def generate_video(image_url, script):
         "video_inputs": [
             {
                 "character": {
-                    "type": "talking_photo",
-                    "talking_photo_id": "aa80db9e21f5451aa3a31e7290c3cf9b",
+                    "type": "avatar",
+                    "avatar_id": "Justo_Business_Front_public",
                     "scale": 0.51,
                     "offset": {
                         "x": 0.25,
@@ -82,9 +81,15 @@ def generate_video(image_url, script):
                 },
                 "voice": {
                     "type": "text",
-                    "voice_id": "5f745b3db0db43739f31499f4f0aedd6",
+                    "voice_id": "9b6d89a2ac3f4a0eaa82f4d9ed9cabbf",
                     "input_text": script,
-                    "speed": 1.25
+                    "speed": 1,
+                    "elevenlabs_settings": {
+                        "model": "eleven_multilingual_v2",
+                        "similarity_boost": 0.75,
+                        "stability" : 0.51,
+                        "style": 0.0,
+                    }
                 },
                 "background": {
                     "type": "image",
@@ -115,6 +120,28 @@ def check_if_video_is_generated(video_id):
                 break
     return response.text
 
+def download_video(url: str):
+    
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open('video.mp4', 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+
+def upload_video():
+    
+    today = datetime.date.today()
+    
+    payload = {
+        "title": f'Chicago 7 Day Weather: {today}',
+        "description": f'A 7 day weather forecast starting from {today}'
+    }
+    url = "http://localhost:8080/uploadVideo"
+    response = requests.post(url, payload)
+    
+    print(response.text)
+    return response.text
+
 if __name__ == "__main__":
     #First get the 7 day weather data
     weatherData = json.loads(requests.get("http://localhost:8080/weather/7day/chicago").text)
@@ -124,15 +151,17 @@ if __name__ == "__main__":
     create_bg_image(data)
     
     #Upload image to HeyGen
-    response = json.loads(upload_image())
+    image_upload_response = json.loads(upload_image(file_path="./assets/temp_assets/weather_chicago.png"))
     
     #Get the 7 day forecast script from gpt 4.1
     script = get_7day_weather_script(weatherData)
-    print(response["data"]["url"])
-    print(script)
     
     #Generate the video on HeyGen using the background image and the script.
-    vide_response = json.loads(generate_video(image_url=response["data"]["url"], script=script))
-    video_id = vide_response['data']['video_id']
+    video_response = json.loads(generate_video(image_url=image_upload_response["data"]["url"], script=script))
+    
+    video_id = video_response['data']['video_id']
 
     video_url = json.loads(check_if_video_is_generated(video_id))['data']['video_url']
+    
+    download_video(video_url)
+    upload_video()

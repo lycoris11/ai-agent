@@ -5,11 +5,19 @@ type Background struct {
 	URL  string `json:"url"`
 }
 
+type ElevenLabsSettings struct {
+	Model            string  `json:"model"`
+	Similarity_boost float32 `json:"similarity_boost"`
+	Stability        float32 `json:"stability"`
+	Style            float32 `json:"style"`
+}
+
 type Voice struct {
-	Type      string  `json:"type"`
-	VoiceID   string  `json:"voice_id"`
-	InputText string  `json:"input_text"`
-	Speed     float32 `json:"speed"`
+	Type               string             `json:"type"`
+	VoiceID            string             `json:"voice_id"`
+	InputText          string             `json:"input_text"`
+	Speed              float32            `json:"speed"`
+	ElevenLabsSettings ElevenLabsSettings `json:"elevenlabs_settings"`
 }
 
 type Offset struct {
@@ -18,12 +26,12 @@ type Offset struct {
 }
 
 type Character struct {
-	Type           string  `json:"type"`
-	TalkingPhotoID string  `json:"talking_photo_id"`
-	Offset         Offset  `json:"offset"`
-	Scale          float32 `json:"scale"`
-	TalkingStyle   string  `json:"talking_style"`
-	Expression     string  `json:"expression"`
+	Type         string  `json:"type"`
+	AvatarID     string  `json:"avatar_id"`
+	Offset       Offset  `json:"offset"`
+	Scale        float32 `json:"scale"`
+	TalkingStyle string  `json:"talking_style"`
+	Expression   string  `json:"expression"`
 }
 
 type VideoInputs struct {

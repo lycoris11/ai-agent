@@ -2,3 +2,5 @@
 .ec2_user_data.sh
 /assets/temp_assets/*
 __pycache__
+video.mp4
+credentials.json
