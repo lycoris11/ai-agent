@@ -53,8 +53,13 @@ func UploadVideo(c *gin.Context, google_auth *model.Google) {
 		Snippet: &youtube.VideoSnippet{
 			Title:       title,
 			Description: description,
+			CategoryId:  "26",
+			Tags:        []string{"Weather", "News", "Forecast", "AI Weather", "AI Generated", "7 day forecast"},
 		},
-		Status: &youtube.VideoStatus{PrivacyStatus: "private"},
+		Status: &youtube.VideoStatus{
+			PrivacyStatus: "public",
+			MadeForKids:   false,
+		},
 	}
 
 	call := yt.Videos.Insert([]string{"snippet", "status"}, video)

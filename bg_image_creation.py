@@ -68,7 +68,7 @@ def create_bg_image(data):
             mintemp=item["mintemp"], 
             condition=item["condition"], 
             width=cell_width, 
-            height=cell_height)
+            height=550)
         x_pos = i*cell_width + i*gap
         result.paste(comp_img, (x_pos, 0), comp_img)
 
