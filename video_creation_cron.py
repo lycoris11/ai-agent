@@ -137,7 +137,10 @@ def upload_video():
         "description": f'A 7 day weather forecast starting from {today}'
     }
     url = "http://localhost:8080/uploadVideo"
-    response = requests.post(url, payload)
+    
+    with open("video.mp4", "rb") as f:
+        files = {'file': {"video.mp4", f, "video/mp4"}}
+        response = requests.post(url, payload, files=files)
     
     print(response.text)
     return response.text

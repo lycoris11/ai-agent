@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lycoris11/ai-agent/internal/model"
@@ -36,9 +35,17 @@ func UploadVideo(c *gin.Context, google_auth *model.Google) {
 	title := c.PostForm("title")
 	description := c.PostForm("description")
 
-	file, err := os.Open("video.mp4")
+	fileHeader, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(400, gin.H{"error": "No file uploaded"})
+		return
+	}
+
+	file, err := fileHeader.Open()
 	if err != nil {
 		log.Fatalf("Error opening video file: %v", err)
+		c.JSON(500, gin.H{"error": "Failed to open uploaded file"})
+		return
 	}
 	defer file.Close()
 
