@@ -17,14 +17,21 @@ def get_day_name(date_string: str) -> str:
     day_of_week = date_object.weekday()
     day_name = ""
     
-    match day_of_week:
-        case 0: day_name = "Mon"
-        case 1: day_name = "Tue"
-        case 2: day_name = "Wed"
-        case 3: day_name = "Thur"
-        case 4: day_name = "Fri"
-        case 5: day_name = "Sat"
-        case 6: day_name = "Sun"
+    
+    if day_of_week == 0:
+        day_name = "Mon"
+    elif day_of_week == 1:
+        day_name = "Tue"
+    elif day_of_week == 2:
+        day_name = "Wed"
+    elif day_of_week == 3:
+        day_name = "Thur"
+    elif day_of_week == 4:
+        day_name = "Fri"
+    elif day_of_week == 5:
+        day_name = "Sat"
+    elif day_of_week == 6:
+        day_name = "Sun"
     
     return day_name
 
