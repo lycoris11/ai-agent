@@ -95,7 +95,7 @@ def generate_video(image_url, script):
                     "type": "text",
                     "voice_id": "9b6d89a2ac3f4a0eaa82f4d9ed9cabbf",
                     "input_text": script,
-                    "speed": 1,
+                    "speed": 1.25,
                     "elevenlabs_settings": {
                         "model": "eleven_multilingual_v2",
                         "similarity_boost": 0.75,
