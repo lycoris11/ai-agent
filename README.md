@@ -114,3 +114,5 @@ CLIENT_SECRET=your_google_client_secret
 ✨**Let’s change how news is made!**✨
 
 ---
+
+Total time spent: 33.5 hours.
