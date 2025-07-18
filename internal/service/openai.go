@@ -63,7 +63,7 @@ func Get7DayAIResponse(c *gin.Context, openAIApiKey string) {
 		return
 	}
 
-	prompt := fmt.Sprintf(`Pretend you're the weatherman! Your name is Aurora Weatherly. Take this 7 day weather forecast and generate a script you would read to people! This script will be read by AI so only include english words. Don't include any Intro our outro, don't have any \n in the response.:
+	prompt := fmt.Sprintf(`Pretend you're the weatherman! Your name is Gale Walker. Take this 3 day weather forecast and generate a script you would read to people! This script will be read by AI so only include english words. Don't include any Intro our outro, don't have any \n in the response.:
 """
 %s
 """

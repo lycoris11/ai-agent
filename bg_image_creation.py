@@ -2,6 +2,10 @@
 import requests
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def render_weather_component(day, icon_url, maxtemp, mintemp, condition, width=100, height=140, opacity=30):
     # Create a transparent image for the weather unit
@@ -14,14 +18,36 @@ def render_weather_component(day, icon_url, maxtemp, mintemp, condition, width=1
                                 radius=rect_radius, fill=box_color)
 
     try:
-        day_font = ImageFont.truetype("./assets/Roboto-Medium.ttf", 64)
-        max_temp_font = ImageFont.truetype("./assets/Roboto-Medium.ttf", 52)
-        min_temp_font = ImageFont.truetype("./assets/Roboto-Medium.ttf", 38)
-        condition_font = ImageFont.truetype("./assets/Roboto-Medium.ttf", 42)
+        if os.getenv("ENV") == "dev":
+            day_font = ImageFont.truetype("./assets/Roboto-Medium.ttf", 64)
+        else:
+            day_font = ImageFont.truetype("/home/ec2-user/ai-agent/assets/Roboto-Medium.ttf", 64)
     except IOError:
         day_font = ImageFont.load_default()
+        
+    try:
+        if os.getenv("ENV") == "dev":
+            max_temp_font = ImageFont.truetype("./assets/Roboto-Medium.ttf", 52)
+        else:
+            max_temp_font = ImageFont.truetype("/home/ec2-user/ai-agent/assets/Roboto-Medium.ttf", 52)
+    except IOError:
         max_temp_font = ImageFont.load_default()
+        
+    try:
+        if os.getenv("ENV") == "dev":
+            min_temp_font = ImageFont.truetype("./assets/Roboto-Medium.ttf", 38)
+        else:
+            min_temp_font = ImageFont.truetype("/home/ec2-user/ai-agent/assets/Roboto-Medium.ttf", 38)
+    except IOError:
         min_temp_font = ImageFont.load_default()
+        
+    try:
+        if os.getenv("ENV") == "dev":
+            condition_font = ImageFont.truetype("./assets/Roboto-Medium.ttf", 42)
+        else:
+            condition_font = ImageFont.truetype("/home/ec2-user/ai-agent/assets/Roboto-Medium.ttf", 42)
+    except IOError:
+        condition_font = ImageFont.load_default()
 
     bbox = comp_draw.textbbox((0, 0), day, font=day_font)
     w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
@@ -47,7 +73,7 @@ def render_weather_component(day, icon_url, maxtemp, mintemp, condition, width=1
 
 def create_bg_image(data):
     
-    cell_width, cell_height = 274, 1080
+    cell_width, cell_height = 640, 1080
     gap = 0
     n = len(data)
     total_width = cell_width*n + gap*(n-1)
@@ -72,6 +98,9 @@ def create_bg_image(data):
         x_pos = i*cell_width + i*gap
         result.paste(comp_img, (x_pos, 0), comp_img)
 
-    result.save('./assets/temp_assets/weather_chicago.png')
+    if os.getenv("ENV") == "dev":
+        result.save('./assets/temp_assets/weather_chicago.png')
+    else:
+        result.save('/home/ec2-user/ai-agent/assets/temp_assets/weather_chicago.png')
     result.show()
 

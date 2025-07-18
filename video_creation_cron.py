@@ -33,7 +33,7 @@ def get_day_name(date_string: str) -> str:
     elif day_of_week == 6:
         day_name = "Sun"
     
-    return day_name
+    return day_name +" - " + f"{date_object.month}/{date_object.day}"
 
 def get_data_for_image(weather_data) -> list:
     
@@ -42,6 +42,7 @@ def get_data_for_image(weather_data) -> list:
     for dateData in weather_data:
         dayInfo = {}
         dayInfo.update({'day': get_day_name(dateData['date'])})
+        # dayInfo.update({'date': get_date(dateData['date'])})
         dayInfo.update({'icon_url': "https:"+dateData['day']['condition']['icon']})
         dayInfo.update({'maxtemp': format_temp(dateData['day']['maxtemp_f'])})
         dayInfo.update({'mintemp': format_temp(dateData['day']['mintemp_f'])})
@@ -161,17 +162,17 @@ if __name__ == "__main__":
     create_bg_image(data)
     
     #Upload image to HeyGen
-    image_upload_response = json.loads(upload_image(file_path="./assets/temp_assets/weather_chicago.png"))
+    # image_upload_response = json.loads(upload_image(file_path="./assets/temp_assets/weather_chicago.png"))
     
-    #Get the 7 day forecast script from gpt 4.1
-    script = get_7day_weather_script(weatherData)
+    # #Get the 7 day forecast script from gpt 4.1
+    # script = get_7day_weather_script(weatherData)
     
-    #Generate the video on HeyGen using the background image and the script.
-    video_response = json.loads(generate_video(image_url=image_upload_response["data"]["url"], script=script))
+    # #Generate the video on HeyGen using the background image and the script.
+    # video_response = json.loads(generate_video(image_url=image_upload_response["data"]["url"], script=script))
     
-    video_id = video_response['data']['video_id']
+    # video_id = video_response['data']['video_id']
 
-    video_url = json.loads(check_if_video_is_generated(video_id))['data']['video_url']
+    # video_url = json.loads(check_if_video_is_generated(video_id))['data']['video_url']
     
-    download_video(video_url)
-    upload_video()
+    # download_video(video_url)
+    # upload_video()
