@@ -1,70 +1,115 @@
-# AI-Agent: Automated 3-Day Weather Report Generator & Uploader
 
-This project is an **Agentic Workflow** that automates the process of generating, rendering, and uploading 3-day weather forecast videos to YouTube. It leverages weather APIs, AI-generated scripts throught GPT 4.1, dynamic image creation, and an AI video generation service to deliver 3 day weather updates with zero human intervention.
+# ⛅️ AI-Agent: Automated 3-Day Weather Report Generator & Uploader 📺
 
-e.g. [Watch a generated weather report on YouTube!](https://www.youtube.com/watch?v=4tkDLn0-j4A)
+🚀 **Zero-human-intervention 3-day weather report videos, automatically generated and posted to YouTube!**  
+From API to scriptwriting, image & video generation, to upload — all handled by an agentic workflow.
 
-I wrote a Go API using Gin as a middleman/proxy in between the various AI APIs I use. I was thinking long term that maybe in the future, I could give users the ability to generate their own videos. Unfortunately, generating AI videos can be costly, so I would want to add OAuth 2.0 authentication to prevent abuse of my API keys. Additionally, it gives me room to extend functionality.
+[▶️ Watch an auto-generated weather report!](https://www.youtube.com/watch?v=4tkDLn0-j4A)
 
-I host this Agentic Worflow on EC2 and I've provided sample ec2 user data.
-The Go API lives within a docker container. A cron job runs the Python script calling the Go API. Currently, the container is not exposed to public IPs. When running `docker run` only localhost is exposed. I have not yet found a reason compelling enough to make the API public. In the future when I enact rate limits, and OAuth I would consider this.
+---
 
-Please contribute to this using your own keys!
+## 🧩 Project Overview
 
-Weather, unlike other news segments, is completely unbiased. Its numbers, its facts, its something that lends itsself to AI! I would love help! This is open source!
+This project features:
+- **Agentic Workflow:** Python + Go orchestrate the show
+- **AI-powered scripts:** GPT-4.1 generates natural reports
+- **Dynamic images:** Visuals generated on the fly
+- **AI Video:** HeyGen avatars narrate your weather update
+- **Source:** WeatherAPI delivers unbiased data
+- **Delivery:** Automatic upload to YouTube
 
-## Features
+Built for extensibility and security:  
+- 🟦 **Go API** (with Gin) as a smart proxy and control point  
+- 🟩 **Dockerized** backend, private by default  
+- 🟧 **EC2-hosted workflow** with ready-to-use launch scripts  
+- 🟪 **OAuth 2.0 & rate limiting planned** for future public access & security
 
-- **Weather Data Fetching:** Retrieves 3-day weather forecasts for a specified city using the WeatherAPI.
-- **AI Script Generation:** Uses OpenAI's GPT models to generate natural-sounding weather report scripts based on forecast data.
-- **Dynamic Image Creation:** Renders background images with weather icons and data using Python and Pillow.
-- **Video Generation:** Integrates with HeyGen API to create videos combining AI scripts, avatars, and generated backgrounds.
-- **YouTube Upload:** Automatically uploads the final video to YouTube using the YouTube Data API.
-- **Agentic Workflow:** Orchestrates the entire process via a Python cron script and a Go-based backend API.
+> **🌱 Open Source!** Feel free to contribute (with your own API keys). Let’s build the future of AI-generated media together!
 
-## Project Structure
+---
 
-- `cmd/ai-agent/`: Main Go application entrypoint.
-- `internal/api/`: API handlers and route definitions (Gin framework).
-- `internal/service/`: Business logic for weather, AI, video, and image processing.
-- `internal/model/`: Data models for weather, video, and API keys.
-- `internal/config/`: Environment variable and API key management.
-- `video_creation_cron.py`: Python script that orchestrates the daily workflow.
-- `bg_image_creation.py`: Python module for generating weather background images.
-- `assets/`: Fonts and generated images.
-- `.env`: Environment variables (API keys, secrets, etc).
+## ✨ Features at a Glance
 
-## Workflow Overview
+- 🌤️ **Weather Data Fetching** — 3-day forecasts with WeatherAPI  
+- 🤖 **AI Script Generation** — Natural language via OpenAI GPT  
+- 🎨 **Dynamic Image Creation** — Python & Pillow composites  
+- 🎭 **AI Video Production** — Avatars & backgrounds via HeyGen  
+- ⬆️ **YouTube Auto-upload** — Fully automated with titles & description  
+- 🔄 **End-to-End Automation** — Cronjob + Docker + Go API + Python
 
-1. **Fetch Weather Data:** The Python script requests a 3-day forecast from the Go API.
-2. **Prepare Data:** Extracts and formats the next 3 days for image and script generation.
-3. **Generate Background Image:** Using Python Image libraries, renders a composite image with weather icons and stats.
-4. **Upload Image:** Sends the image to the Go API, which uploads it to HeyGen.
-5. **Generate Script:** Sends weather data to the Go API, which uses OpenAI to generate a script.
-6. **Generate Video:** Requests HeyGen to create a video using the script and background.
-7. **Poll for Completion:** Waits for video generation to finish.
-8. **Download Video:** Retrieves the finished video.
-9. **Upload to YouTube:** Posts the video to YouTube with a generated title and description.
+---
 
-## Setup & Usage
+## 📂 Project Structure
+
+| Path / File                | Purpose                                         |
+|----------------------------|------------------------------------------------|
+| `cmd/ai-agent/`            | Go app entrypoint                              |
+| `internal/api/`            | Gin HTTP handlers                              |
+| `internal/service/`        | Core business logic                            |
+| `internal/model/`          | Data models (weather/video/API keys)           |
+| `internal/config/`         | Env & key management                           |
+| `video_creation_cron.py`   | Daily workflow orchestrator (Python)           |
+| `bg_image_creation.py`     | Weather image generator (Python)               |
+| `assets/`                  | Fonts & image storage                          |
+| `.env`                     | Store API keys and config                      |
+
+---
+
+## ⚙️ How it Works
+
+1. **Fetch Weather** 🛰️  
+   Python script calls Go API for 3-day forecast
+2. **Prepare Data** 📅  
+   Extract days, parse for reporting
+3. **Generate Image** 🖼️  
+   Create weather backgrounds with Python & Pillow
+4. **Image Upload** ☁️  
+   Image sent to Go API → HeyGen
+5. **Script Generation** 📑  
+   AI-written script by OpenAI (Go API triggers)
+6. **Video Creation** 🎥  
+   HeyGen puts it all together: voice, avatar, background
+7. **Wait & Retrieve** ⏰  
+   Script polls status, downloads when ready
+8. **YouTube Upload** 🚀  
+   Auto-post with catchy title + description
+
+---
+
+## 🔧 Installation & Setup
 
 ### Prerequisites
 
-- Go 1.24+
-- Python 3.9.23+
-- Docker (for deployment)
-- API keys for OpenAI, WeatherAPI, HeyGen, and Google/YouTube
+- 🟠 **Go** v1.24+
+- 🐍 **Python** 3.9.23+
+- 🐋 **Docker** (for seamless deployment)
+- 🔑 API keys: OpenAI, WeatherAPI, HeyGen, & Google/YouTube
 
-### Environment Variables
+### .env Example
 
-Create a `.env` file in your ec2 and reference it as an "--env-file" when running the `docker run` command:
+Set these in your `.env` (and pass as `--env-file` when launching Docker):
+
+```dotenv
 OPENAI_API_KEY=your_openai_key
 WEATHER_API_KEY=your_weatherapi_key
 HEY_GEN_VIDEO_API_KEY=your_heygen_key
-ENV="prod" or "dev"
+ENV=prod   # or "dev"
 REFRESH_TOKEN=your_google_refresh_token
 CLIENT_ID=your_google_client_id
 CLIENT_SECRET=your_google_client_secret
+```
 
+---
 
-Note: This project is for educational and demonstration purposes. Ensure you comply with the terms of service for all third-party APIs used.
+### 🚦 Notes & Contribution
+
+- 📚 *Educational / demonstration purposes only.*
+- 🖊️ *Comply with third-party API terms of service!*
+- 🤝 *PRs, Issues, and Suggestions are very welcome!*
+- 🌍 *Weather is unbiased: just numbers and facts — perfect for AI automation!*
+
+---
+
+✨**Let’s change how news is made!**✨
+
+---
