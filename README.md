@@ -6,6 +6,15 @@ From API to scriptwriting, image & video generation, to upload — all handled b
 
 [▶️ Watch an auto-generated weather report!](https://www.youtube.com/watch?v=4tkDLn0-j4A)
 
+I wrote a Go API using Gin as a middleman/proxy in between the various AI APIs I use. I was thinking long term that maybe in the future, I could give users the ability to generate their own videos. Unfortunately, generating AI videos can be costly, so I would want to add OAuth 2.0 authentication to prevent abuse of my API keys. Additionally, it gives me room to extend functionality.
+
+I host this Agentic Worflow on EC2 and I've provided sample ec2 user data.
+The Go API lives within a docker container. A cron job runs the Python script calling the Go API. Currently, the container is not exposed to public IPs. When running `docker run` only localhost is exposed. I have not yet found a reason compelling enough to make the API public. In the future when I enact rate limits, and OAuth I would consider this.
+
+Please contribute to this using your own keys!
+
+Weather, unlike other news segments, is completely unbiased. Its numbers, its facts, its something that lends itsself to AI! I would love help! This is open source!
+
 ---
 
 ## 🧩 Project Overview
@@ -41,7 +50,7 @@ Built for extensibility and security:
 
 ## 📂 Project Structure
 
-| Path / File                | Purpose                                         |
+| Path / File                | Purpose                                        |
 |----------------------------|------------------------------------------------|
 | `cmd/ai-agent/`            | Go app entrypoint                              |
 | `internal/api/`            | Gin HTTP handlers                              |
@@ -57,22 +66,14 @@ Built for extensibility and security:
 
 ## ⚙️ How it Works
 
-1. **Fetch Weather** 🛰️  
-   Python script calls Go API for 3-day forecast
-2. **Prepare Data** 📅  
-   Extract days, parse for reporting
-3. **Generate Image** 🖼️  
-   Create weather backgrounds with Python & Pillow
-4. **Image Upload** ☁️  
-   Image sent to Go API → HeyGen
-5. **Script Generation** 📑  
-   AI-written script by OpenAI (Go API triggers)
-6. **Video Creation** 🎥  
-   HeyGen puts it all together: voice, avatar, background
-7. **Wait & Retrieve** ⏰  
-   Script polls status, downloads when ready
-8. **YouTube Upload** 🚀  
-   Auto-post with catchy title + description
+1. **Fetch Weather** 🛰️ : Python script calls Go API for 3-day forecast
+2. **Prepare Data** 📅 : Extract days, parse for reporting
+3. **Generate Image** 🖼️: Create weather backgrounds with Python & Pillow
+4. **Image Upload** ☁️: Image sent to Go API → HeyGen
+5. **Script Generation** 📑: AI-written script by OpenAI (Go API triggers)
+6. **Video Creation** 🎥: HeyGen puts it all together: voice, avatar, background
+7. **Wait & Retrieve** ⏰: Script polls status, downloads when ready
+8. **YouTube Upload** 🚀: Auto-post with catchy title + description
 
 ---
 
