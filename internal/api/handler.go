@@ -21,11 +21,10 @@ func getYoutubeService(ctx context.Context, refreshToken string, clientID string
 		ClientSecret: clientSecret,
 		Endpoint:     google.Endpoint,
 		Scopes:       []string{youtube.YoutubeUploadScope},
-		RedirectURL:  "http://localhost:8080", // For installed apps; web servers may use actual URLs
+		RedirectURL:  "http://localhost:8080", // TODO::CHANGE ME IN PRODUCTION IF API IS TURNED PUBLIC
 	}
 	token := &oauth2.Token{RefreshToken: refreshToken}
 
-	// TokenSource handles refreshing the access_token
 	ts := config.TokenSource(ctx, token)
 	return youtube.NewService(ctx, option.WithTokenSource(ts))
 }
@@ -70,7 +69,7 @@ func UploadVideo(c *gin.Context, google_auth *model.Google) {
 	}
 
 	call := yt.Videos.Insert([]string{"snippet", "status"}, video)
-	call.Media(file, googleapi.ContentType("video/*")) // or use the detected MIME type
+	call.Media(file, googleapi.ContentType("video/*"))
 
 	response, err := call.Do()
 	if err != nil {
