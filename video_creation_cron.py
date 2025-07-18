@@ -3,6 +3,10 @@ import json
 import datetime
 import time
 from bg_image_creation import create_bg_image
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def format_condition(condition: str) -> str:
     return condition.replace(" ", "\n")
@@ -162,17 +166,20 @@ if __name__ == "__main__":
     create_bg_image(data)
     
     #Upload image to HeyGen
-    # image_upload_response = json.loads(upload_image(file_path="./assets/temp_assets/weather_chicago.png"))
+    if os.getenv("ENV") == "dev":
+        image_upload_response = json.loads(upload_image(file_path="./assets/weather_chicago.png"))
+    else:
+        image_upload_response = json.loads(upload_image(file_path="/home/ec2-user/ai-agent/assets/weather_chicago.png"))
     
-    # #Get the 7 day forecast script from gpt 4.1
-    # script = get_7day_weather_script(weatherData)
+    #Get the 7 day forecast script from gpt 4.1
+    script = get_7day_weather_script(weatherData)
     
-    # #Generate the video on HeyGen using the background image and the script.
-    # video_response = json.loads(generate_video(image_url=image_upload_response["data"]["url"], script=script))
+    #Generate the video on HeyGen using the background image and the script.
+    video_response = json.loads(generate_video(image_url=image_upload_response["data"]["url"], script=script))
     
-    # video_id = video_response['data']['video_id']
+    video_id = video_response['data']['video_id']
 
-    # video_url = json.loads(check_if_video_is_generated(video_id))['data']['video_url']
+    video_url = json.loads(check_if_video_is_generated(video_id))['data']['video_url']
     
-    # download_video(video_url)
-    # upload_video()
+    download_video(video_url)
+    upload_video()
