@@ -99,8 +99,8 @@ def create_bg_image(data):
         result.paste(comp_img, (x_pos, 0), comp_img)
 
     if os.getenv("ENV") == "dev":
-        result.save('./assets/temp_assets/weather_chicago.png')
+        result.save('./assets/weather_chicago.png')
     else:
         result.save('/home/ec2-user/ai-agent/assets/weather_chicago.png')
-    result.show()
+    #result.show()
 

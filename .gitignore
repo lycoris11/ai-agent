@@ -1,6 +1,6 @@
 .env
 .ec2_user_data.sh
-/assets/temp_assets/*
+/assets/weather_chicago.png
 __pycache__
 video.mp4
 credentials.json

@@ -116,12 +116,14 @@ def generate_video(image_url, script):
     return response.text
 
 def check_if_video_is_generated(video_id):
+    print("Checking if video is generated.")
     url = f'http://localhost:8080//video/getStatus?video_id={video_id}'
     response = requests.get(url)
     res = json.loads(response.text)['data']['status']
     if res != 'completed' or res != 'failed':
         while(res == 'processing' or res == 'waiting' or res == 'pending'):
             time.sleep(120)
+            print("Checking if video is generated.")
             response = requests.get(url)
             res = json.loads(response.text)['data']['status']
             
@@ -145,13 +147,13 @@ def upload_video():
     today = datetime.date.today()
     
     payload = {
-        "title": f'Chicago 7 Day Weather: {today}',
-        "description": f'A 7 day weather forecast starting from {today}'
+        "title": f'Chicago 3 Day Weather: {today}',
+        "description": f'A 3 day weather forecast starting from {today}'
     }
     url = "http://localhost:8080/uploadVideo"
     
     with open("video.mp4", "rb") as f:
-        files = {'file': {"video.mp4", f, "video/mp4"}}
+        files = {'file': ("video.mp4", f, "video/mp4")}
         response = requests.post(url, payload, files=files)
     
     print(response.text)
@@ -165,21 +167,23 @@ if __name__ == "__main__":
     data = get_data_for_image(weatherData)
     create_bg_image(data)
     
-    #Upload image to HeyGen
+    print("Uploading image to HeyGen")
     if os.getenv("ENV") == "dev":
         image_upload_response = json.loads(upload_image(file_path="./assets/weather_chicago.png"))
     else:
         image_upload_response = json.loads(upload_image(file_path="/home/ec2-user/ai-agent/assets/weather_chicago.png"))
     
-    #Get the 7 day forecast script from gpt 4.1
+    print("Getting the 7 day forecast script from gpt 4.1")
     script = get_7day_weather_script(weatherData)
     
-    #Generate the video on HeyGen using the background image and the script.
+    print("Generate the video on HeyGen using the background image and the script")
     video_response = json.loads(generate_video(image_url=image_upload_response["data"]["url"], script=script))
     
     video_id = video_response['data']['video_id']
 
     video_url = json.loads(check_if_video_is_generated(video_id))['data']['video_url']
     
+    print("Downloading Video.")
     download_video(video_url)
+    print("Uploading Video.")
     upload_video()
